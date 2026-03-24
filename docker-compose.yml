@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      - SECRET_KEY=${SECRET_KEY:?Set SECRET_KEY in .env or environment}
+    volumes:
+      - db-data:/app/data
+    expose:
+      - "8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  db-data:

@@ -1,0 +1,27 @@
+Notification Creator — Internal Notification Service
+
+Hi team,
+
+A number of colleagues have mentioned the need for a reliable way to receive notifications when their jobs complete on the build machine. Currently, Slack messages are often used for this purpose, but they can be difficult to audit, easy to lose in busy channels, and don't offer structured filtering or a persistent history.
+
+To help address this, we've put together a small internal tool called Notification Creator. It's a lightweight notification service that we hope might be useful for these kinds of workflows.
+
+What it offers:
+
+- Simple REST API — Any script, CI/CD pipeline, cron job, or monitoring tool can send a notification with a single HTTP POST call
+- Real-time browser notifications — Delivered via Server-Sent Events (SSE), so you're alerted the moment a job completes, even if the browser tab is in the background
+- Web portal with filtering — Browse notification history, filter by tags (e.g. build, deploy, monitoring), priority level, or read/unread status
+- Auditable record — Every notification is persisted with timestamps, priority, and tags, making it straightforward to review what happened and when
+- Minimal setup — No bot tokens, no Slack app configuration, and no channel management. Simply open the portal and enable browser notifications
+
+Example — notifying on build completion:
+
+curl -X POST https://<host>/api/v1/notifications \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Build complete", "body": "my-project build #42 succeeded", "priority": "normal", "tags": ["build", "my-project"]}'
+
+The service is deployed via Docker Compose on our internal network and requires no authentication overhead.
+
+We'd welcome any feedback, suggestions, or questions. If there's interest, we're happy to walk through a short demo as well.
+
+Thank you for your time.
