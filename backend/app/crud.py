@@ -31,7 +31,7 @@ async def create_notification(
         n.tags.append(NotificationTag(tag=tag))
     db.add(n)
     await db.commit()
-    await db.refresh(n)
+    await db.refresh(n, attribute_names=["id", "title", "body", "source", "priority", "read", "created_at", "tags"])
     return _notification_to_out(n)
 
 
@@ -93,6 +93,10 @@ async def mark_many_read(db: AsyncSession, ids: list[int]) -> int:
 
 
 async def delete_notification(db: AsyncSession, nid: int) -> bool:
+    # Delete associated tags first, then the notification
+    await db.execute(
+        delete(NotificationTag).where(NotificationTag.notification_id == nid)
+    )
     result = await db.execute(
         delete(Notification).where(Notification.id == nid)
     )
